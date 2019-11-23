@@ -1,0 +1,41 @@
+{
+  "coord": {
+    "lon": 32.06,
+    "lat": 49.43
+  },
+  "weather": [
+    {
+      "id": 803,
+      "main": "Clouds",
+      "description": "broken clouds",
+      "icon": "04n"
+    }
+  ],
+  "base": "model",
+  "main": {
+    "temp": 272.09,
+    "pressure": 1032,
+    "humidity": 42,
+    "temp_min": 272.09,
+    "temp_max": 272.09,
+    "sea_level": 1032,
+    "grnd_level": 1019
+  },
+  "wind": {
+    "speed": 7.63,
+    "deg": 130
+  },
+  "clouds": {
+    "all": 58
+  },
+  "dt": 1574546476,
+  "sys": {
+    "country": "UA",
+    "sunrise": 1574572552,
+    "sunset": 1574604068
+  },
+  "timezone": 7200,
+  "id": 710791,
+  "name": "Cherkasy",
+  "cod": 200
+}
