@@ -4,57 +4,60 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
 import android.view.View
-import android.widget.TextView
-import android.widget.Toast
-import com.example.weatherapp.configuration.APIConfiguration
-import com.example.weatherapp.interceptors.ServiceBuilder
+import androidx.lifecycle.Observer
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import com.example.weatherapp.reposetories.WeatherWorker
 import com.example.weatherapp.responses.WeatherResponse
-import com.example.weatherapp.services.WeatherService
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import kotlinx.android.synthetic.main.activity_main.*
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.widget.Toast
+import java.util.concurrent.TimeUnit
 
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
-
-    private var weatherData: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        weatherData = findViewById(R.id.text_forecast)
-
         findViewById<View>(R.id.get_forecast).setOnClickListener { getCurrentData() }
     }
 
     private fun getCurrentData() {
-        val weatherService = ServiceBuilder().buildService(WeatherService::class.java)
-        val call = weatherService.getCurrentWeatherData(APIConfiguration.COUNTRY_ID)
+        val request = OneTimeWorkRequest.Builder(WeatherWorker::class.java)
+            .build()
+        WorkManager.getInstance(this).enqueue(request)
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(request.id).observe(this, Observer {
+            if (it.state.isFinished) {
+                WeatherWorker.fetchForecast()!!.apply {
+                    Toast.makeText(this@MainActivity, this[7].dt.toString(), Toast.LENGTH_LONG).show()
 
-        call.enqueue(object : Callback<WeatherResponse> {
-            override fun onResponse(call: Call<WeatherResponse>, response: Response<WeatherResponse>) {
-                if (response.code() == SUCCESS) {
-                    val weatherResponse = response.body()!!
-                    val stringBuilder =
-                        "Wind speed: " +
-                                weatherResponse.wind.speed +
-                                "\n" +
-                        "Temperature: " +
-                            weatherResponse.main.temp +
-                            "\n" +
-                            "Humidity: " +
-                            weatherResponse.main.humidity +
-                            "\n" +
-                            "Pressure: " +
-                            weatherResponse.main.pressure
+//                    this.forEach { weather ->
+//                        run {
+//                            TimeUnit.SECONDS.sleep(3)
+//                            val stringBuilder =
+//                                "Wind speed: " +
+//                                        weather.wind.speed +
+//                                        "\n" +
+//                                        "Temperature: " +
+//                                        weather.main.temp +
+//                                        "\n" +
+//                                        "Humidity: " +
+//                                        weather.main.humidity +
+//                                        "\n" +
+//                                        "dt: " +
+//                                        weather.dt
+//                            text_forecast.text = stringBuilder
+//                        }
+//                    }
 
-                    weatherData!!.text = stringBuilder
                 }
-            }
-            override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
-                Toast.makeText(this@MainActivity, "FAIL", Toast.LENGTH_LONG).show()
-                weatherData!!.text = t.message
             }
         })
     }

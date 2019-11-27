@@ -1,4 +1,4 @@
-package com.example.weatherapp.interceptors
+package com.example.weatherapp.builder
 
 import com.example.weatherapp.configuration.APIConfiguration
 import com.example.weatherapp.services.WeatherService
@@ -7,17 +7,15 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 import com.squareup.moshi.Moshi
-import android.R.attr.name
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 
 class ServiceBuilder {
 
-    private val header = object : Interceptor {
+    private val interceptor = object : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             return chain.proceed(
                 chain.request().newBuilder().url(
@@ -40,7 +38,7 @@ class ServiceBuilder {
 //    }
 
     private val okHttpClient = OkHttpClient.Builder().apply {
-        addInterceptor(header)
+        addInterceptor(interceptor)
         addInterceptor(
             HttpLoggingInterceptor().apply {
                 connectTimeout(30, TimeUnit.SECONDS)

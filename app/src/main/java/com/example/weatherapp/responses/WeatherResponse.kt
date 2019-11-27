@@ -1,17 +1,16 @@
 package com.example.weatherapp.responses
 
-import com.example.weatherapp.entities.Weather
-import com.example.weatherapp.entities.WeatherInfo
-import com.example.weatherapp.entities.Wind
+import com.example.weatherapp.entities.*
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 
 @JsonClass(generateAdapter = true)
 data class WeatherResponse(
-    val id: Long,
-    val main: WeatherInfo,
-    val weather: List<Weather>,
-    val wind: Wind,
-    val rain: Map<String, Int>?,
-    val clouds: Map<String, Int>?
+    @Json(name = "dt") val dt: Long,
+    @Json(name = "main") val main: Main,
+    @Json(name = "weather") val weather: List<Weather>,
+    @Json(name = "wind") val wind: Wind,
+    //@Json(name = "rain") val rain: Map<String, Int>?,
+    @Json(name = "clouds") val clouds: Map<String, Int>?
 )
