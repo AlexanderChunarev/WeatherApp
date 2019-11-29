@@ -1,65 +1,38 @@
 package com.example.weatherapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-
-import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import com.example.weatherapp.reposetories.WeatherWorker
-import com.example.weatherapp.responses.WeatherResponse
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
-import kotlinx.android.synthetic.main.activity_main.*
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.widget.Toast
-import java.util.concurrent.TimeUnit
-
+import androidx.lifecycle.ViewModelProviders
+import com.example.weatherapp.fragments.adapters.DataAdapter
+import com.example.weatherapp.viewmodels.ViewModelFactory
+import com.example.weatherapp.viewmodels.WeatherViewModel
+import kotlinx.android.synthetic.main.fragment_list.*
 
 class MainActivity : AppCompatActivity() {
+    private val adapter by lazy { DataAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        findViewById<View>(R.id.get_forecast).setOnClickListener { getCurrentData() }
+        list_of_cpu.adapter = adapter
+        getCurrentData()
+        //findViewById<View>(R.id.get_forecast).setOnClickListener { getCurrentData() }
     }
 
     private fun getCurrentData() {
-        val request = OneTimeWorkRequest.Builder(WeatherWorker::class.java)
-            .build()
-        WorkManager.getInstance(this).enqueue(request)
-        WorkManager.getInstance(this).getWorkInfoByIdLiveData(request.id).observe(this, Observer {
-            if (it.state.isFinished) {
-                WeatherWorker.fetchForecast()!!.apply {
-                    Toast.makeText(this@MainActivity, this[7].dt.toString(), Toast.LENGTH_LONG).show()
+        val weatherViewModel =
+            ViewModelProviders.of(this, ViewModelFactory(this, this))
+                .get(WeatherViewModel::class.java)
 
-//                    this.forEach { weather ->
-//                        run {
-//                            TimeUnit.SECONDS.sleep(3)
-//                            val stringBuilder =
-//                                "Wind speed: " +
-//                                        weather.wind.speed +
-//                                        "\n" +
-//                                        "Temperature: " +
-//                                        weather.main.temp +
-//                                        "\n" +
-//                                        "Humidity: " +
-//                                        weather.main.humidity +
-//                                        "\n" +
-//                                        "dt: " +
-//                                        weather.dt
-//                            text_forecast.text = stringBuilder
-//                        }
-//                    }
-
-                }
-            }
-        })
+        weatherViewModel.apply {
+            currentWeatherForecast.observe(this@MainActivity, Observer { weather ->
+                adapter.addItem(weather)
+            })
+            forecastList.observe(this@MainActivity, Observer { weather ->
+                weather.forEach { adapter.addItem(it) }
+            })
+        }
     }
 
     companion object {

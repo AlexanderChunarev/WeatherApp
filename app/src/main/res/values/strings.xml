@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+    <string name="_29_c">29°C</string>
+    <string name="_29">29°</string>
+    <string name="clouds">Clouds</string>
+    <string name="clouds_and_sunny_spells">Clouds and sunny spells</string>
+    <string name="slash">/</string>
+    <string name="friday_29_11">Friday,29/11</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
