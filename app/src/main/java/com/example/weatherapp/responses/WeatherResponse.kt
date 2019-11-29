@@ -6,11 +6,11 @@ import com.squareup.moshi.JsonClass
 
 
 @JsonClass(generateAdapter = true)
-data class WeatherResponse(
+class WeatherResponse(
     @Json(name = "dt") val dt: Long,
     @Json(name = "main") val main: Main,
     @Json(name = "weather") val weather: List<Weather>,
     @Json(name = "wind") val wind: Wind,
     //@Json(name = "rain") val rain: Map<String, Int>?,
     @Json(name = "clouds") val clouds: Map<String, Int>?
-)
+) : Response()

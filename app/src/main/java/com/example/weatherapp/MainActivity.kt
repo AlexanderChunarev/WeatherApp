@@ -1,5 +1,8 @@
 package com.example.weatherapp
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -17,7 +20,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         list_of_cpu.adapter = adapter
         getCurrentData()
-        //findViewById<View>(R.id.get_forecast).setOnClickListener { getCurrentData() }
     }
 
     private fun getCurrentData() {
@@ -30,13 +32,15 @@ class MainActivity : AppCompatActivity() {
                 adapter.addItem(weather)
             })
             forecastList.observe(this@MainActivity, Observer { weather ->
-                weather.forEach { adapter.addItem(it) }
+                weather.forEach {
+                    adapter.addItem(it)
+                }
             })
         }
     }
 
     companion object {
-        const val SUCCESS = 200
+        const val DATE_FORMAT = "MM dd"
     }
 
 }

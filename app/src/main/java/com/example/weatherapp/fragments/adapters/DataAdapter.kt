@@ -8,29 +8,34 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.example.weatherapp.R
 import com.example.weatherapp.responses.CurrentWeatherResponse
+import com.example.weatherapp.responses.Response
 import com.example.weatherapp.responses.WeatherResponse
-import com.squareup.picasso.Picasso
-import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
-import java.util.*
 
+class DataAdapter : Adapter<RecyclerView.ViewHolder>() {
+    private val weatherList = mutableListOf<Response>()
 
-class DataAdapter() : Adapter<RecyclerView.ViewHolder>() {
-    private val weatherList = mutableListOf<Any>()
-
-    fun addItem(any: Any) {
-        weatherList.add(any)
+    fun addItem(response: Response) {
+        if (weatherList.size > 1) {
+            if (isDayValid(response)) {
+                weatherList.add(response)
+            }
+        } else {
+            weatherList.add(response)
+        }
         notifyItemInserted(weatherList.size)
     }
 
+    private fun isDayValid(response: Response) =
+        (weatherList[weatherList.lastIndex] as WeatherResponse).dt + DAY_UNIX ==
+                (response as WeatherResponse).dt
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var viewHolder: RecyclerView.ViewHolder? = null
-        println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD")
         when (viewType) {
             TYPE_CURRENT_WEATHER -> {
                 viewHolder = CurrentWeatherViewHolder(
                     LayoutInflater.from(parent.context).inflate(
-                        R.layout.cw,
+                        R.layout.current_weather_item,
                         parent,
                         false
                     )
@@ -39,7 +44,7 @@ class DataAdapter() : Adapter<RecyclerView.ViewHolder>() {
             TYPE_DAILY_WEATHER -> {
                 viewHolder = DailyViewHolder(
                     LayoutInflater.from(parent.context).inflate(
-                        R.layout.dw,
+                        R.layout.daily_weather_item,
                         parent,
                         false
                     )
@@ -66,23 +71,13 @@ class DataAdapter() : Adapter<RecyclerView.ViewHolder>() {
             TYPE_CURRENT_WEATHER -> {
                 val currentWeather = weatherList[position] as CurrentWeatherResponse
                 (holder as CurrentWeatherViewHolder).apply {
-                    city.text = currentWeather.name
-                    date.text = currentWeather.dt.convertToDate()
-                    temp.text = currentWeather.main.temp
-                    description.text = currentWeather.weather[0].description
-                    Picasso.get().load("$ICON_URL${currentWeather.weather[0].icon}$ICON_FORMAT")
-                        .fit().into(image)
+                    bind(currentWeather)
                 }
             }
             TYPE_DAILY_WEATHER -> {
                 val dailyWeather = weatherList[position] as WeatherResponse
                 (holder as DailyViewHolder).apply {
-                    date.text = dailyWeather.dt.convertToDate()
-                    description.text = dailyWeather.weather[0].description
-                    minTemp.text = dailyWeather.main.temp_min
-                    maxTemp.text = dailyWeather.main.temp_max
-                    Picasso.get().load("$ICON_URL${dailyWeather.weather[0].icon}$ICON_FORMAT").fit()
-                        .into(image)
+                    bind(dailyWeather)
                 }
             }
         }
@@ -93,12 +88,9 @@ class DataAdapter() : Adapter<RecyclerView.ViewHolder>() {
         const val TYPE_DAILY_WEATHER = 2
         const val ICON_URL = "http://openweathermap.org/img/wn/"
         const val ICON_FORMAT = "@2x.png"
+        //const val DATE_FORMAT = "dd.MM.yyyy hh:mma"
+        const val DATE_FORMAT = "dd.MM.yyyy"
+        const val DAY_UNIX = 86400
     }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-private fun Long.convertToDate(): String? {
-    return DateTimeFormatter.ISO_INSTANT
-        .format(java.time.Instant.ofEpochSecond(this)).toString()
 }
 
