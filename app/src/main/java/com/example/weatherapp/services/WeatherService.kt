@@ -9,8 +9,8 @@ import retrofit2.http.Query
 
 interface WeatherService {
     @GET("data/2.5/forecast?")
-    fun getForecast(@Query("id") id: String): Call<WeatherList>
+    fun getForecast(@Query("q") id: String, @Query("units") units: String): Call<WeatherList>
 
     @GET("data/2.5/weather?")
-    fun getCurrentForecast(@Query("id") id: String): Call<CurrentWeatherResponse>
+    fun getCurrentForecast(@Query("q") id: String, @Query("units") units: String): Call<CurrentWeatherResponse>
 }

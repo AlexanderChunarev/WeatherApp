@@ -27,15 +27,6 @@ class ServiceBuilder {
         }
 
     }
-//    private val interceptor = Interceptor { chain ->
-//        chain.proceed(
-//            chain.request().newBuilder().url(
-//                chain.request().url.newBuilder()
-//                    .addQueryParameter(QUERY_PARAM, APIConfiguration.API_KEY)
-//                    .build()
-//            ).build()
-//        )
-//    }
 
     private val okHttpClient = OkHttpClient.Builder().apply {
         addInterceptor(interceptor)
@@ -64,6 +55,7 @@ class ServiceBuilder {
 
     companion object {
         const val QUERY_PARAM = "appid"
+        const val QUERY_SYSTEM = "units"
     }
 
 }

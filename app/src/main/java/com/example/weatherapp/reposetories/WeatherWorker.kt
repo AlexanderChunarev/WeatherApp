@@ -16,10 +16,10 @@ class WeatherWorker(context: Context, workerParams: WorkerParameters) :
 
     override fun doWork(): Result {
         ServiceBuilder().buildService(WeatherService::class.java).apply {
-            getForecast(APIConfiguration.COUNTRY_ID).await().apply {
+            getForecast(APIConfiguration.COUNTRY_NAME, "metric").await().apply {
                 forecast = this.list
             }
-            getCurrentForecast(APIConfiguration.COUNTRY_ID).await().apply {
+            getCurrentForecast(APIConfiguration.COUNTRY_NAME, "metric").await().apply {
                 currForecast = this
             }
         }

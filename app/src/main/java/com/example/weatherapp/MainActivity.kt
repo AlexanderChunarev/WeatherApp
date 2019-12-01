@@ -1,24 +1,26 @@
 package com.example.weatherapp
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.thirdhomework.listener.OnItemListener
 import com.example.weatherapp.fragments.adapters.DataAdapter
 import com.example.weatherapp.viewmodels.ViewModelFactory
 import com.example.weatherapp.viewmodels.WeatherViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
 
-class MainActivity : AppCompatActivity() {
-    private val adapter by lazy { DataAdapter() }
+class MainActivity : AppCompatActivity(), OnItemListener {
+    private val adapter by lazy { DataAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         list_of_cpu.adapter = adapter
+        list_of_cpu.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
         getCurrentData()
     }
 
@@ -41,6 +43,10 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val DATE_FORMAT = "MM dd"
+    }
+
+    override fun onClickItem(position: Int) {
+       Toast.makeText(this, "CLICKED", Toast.LENGTH_LONG).show()
     }
 
 }

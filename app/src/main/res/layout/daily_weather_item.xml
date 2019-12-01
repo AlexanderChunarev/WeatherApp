@@ -7,7 +7,6 @@
     android:padding="2dp"
     android:orientation="vertical">
 
-
     <TextView
         android:id="@+id/daily_date_text"
         android:layout_width="wrap_content"
@@ -15,6 +14,7 @@
         android:fontFamily="sans-serif-light"
         android:text="@string/friday_29_11"
         android:textColor="@color/textColor"
+        app:layout_constraintBottom_toTopOf="@id/daily_weather_icon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

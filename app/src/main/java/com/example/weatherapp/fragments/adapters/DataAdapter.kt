@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
+import com.example.thirdhomework.listener.OnItemListener
 import com.example.weatherapp.R
 import com.example.weatherapp.responses.CurrentWeatherResponse
 import com.example.weatherapp.responses.Response
 import com.example.weatherapp.responses.WeatherResponse
 
-class DataAdapter : Adapter<RecyclerView.ViewHolder>() {
+class DataAdapter(private val onItemListener: OnItemListener) : Adapter<RecyclerView.ViewHolder>() {
     private val weatherList = mutableListOf<Response>()
 
     fun addItem(response: Response) {
@@ -47,7 +48,7 @@ class DataAdapter : Adapter<RecyclerView.ViewHolder>() {
                         R.layout.daily_weather_item,
                         parent,
                         false
-                    )
+                    ), onItemListener
                 )
             }
         }
