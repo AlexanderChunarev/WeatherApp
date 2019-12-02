@@ -15,20 +15,12 @@ import com.example.weatherapp.responses.WeatherResponse
 class DataAdapter(private val onItemListener: OnItemListener) : Adapter<RecyclerView.ViewHolder>() {
     private val weatherList = mutableListOf<Response>()
 
+    fun getWeatherList() = weatherList
+
     fun addItem(response: Response) {
-        if (weatherList.size > 1) {
-            if (isDayValid(response)) {
-                weatherList.add(response)
-            }
-        } else {
-            weatherList.add(response)
-        }
+        weatherList.add(response)
         notifyItemInserted(weatherList.size)
     }
-
-    private fun isDayValid(response: Response) =
-        (weatherList[weatherList.lastIndex] as WeatherResponse).dt + DAY_UNIX ==
-                (response as WeatherResponse).dt
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var viewHolder: RecyclerView.ViewHolder? = null
@@ -89,8 +81,8 @@ class DataAdapter(private val onItemListener: OnItemListener) : Adapter<Recycler
         const val TYPE_DAILY_WEATHER = 2
         const val ICON_URL = "http://openweathermap.org/img/wn/"
         const val ICON_FORMAT = "@2x.png"
-        //const val DATE_FORMAT = "dd.MM.yyyy hh:mma"
-        const val DATE_FORMAT = "dd.MM.yyyy"
+        const val DATE_FORMAT = "dd.MM.yyyy hh:mma"
+        //const val DATE_FORMAT = "dd.MM.yyyy"
         const val DAY_UNIX = 86400
     }
 }

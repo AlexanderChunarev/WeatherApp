@@ -1,3 +1,5 @@
 package com.example.weatherapp.responses
 
-open class Response
+import java.io.Serializable
+
+open class Response : Serializable

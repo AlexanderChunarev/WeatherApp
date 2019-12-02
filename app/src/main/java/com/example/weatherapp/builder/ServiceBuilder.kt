@@ -55,7 +55,6 @@ class ServiceBuilder {
 
     companion object {
         const val QUERY_PARAM = "appid"
-        const val QUERY_SYSTEM = "units"
     }
 
 }
