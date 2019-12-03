@@ -3,7 +3,6 @@ package com.example.weatherapp
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -17,9 +16,9 @@ import com.example.weatherapp.fragments.SettingsFragment
 import com.example.weatherapp.fragments.adapters.DataAdapter
 import com.example.weatherapp.responses.Response
 import com.example.weatherapp.responses.WeatherResponse
+import com.example.weatherapp.viewmodels.SharedViewModel
 import com.example.weatherapp.viewmodels.ViewModelFactory
 import com.example.weatherapp.viewmodels.WeatherViewModel
-import kotlinx.android.synthetic.main.fragment_settings.*
 
 class MainActivity : AppCompatActivity(), OnItemListener {
     private val adapter by lazy { DataAdapter(this) }
@@ -28,6 +27,9 @@ class MainActivity : AppCompatActivity(), OnItemListener {
         ViewModelProviders.of(this, ViewModelFactory(this, this))
             .get(WeatherViewModel::class.java)
     }
+    private val sharedViewModel by lazy {
+        ViewModelProviders.of(this).get(SharedViewModel::class.java)
+    }
     private var response: Response? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +37,15 @@ class MainActivity : AppCompatActivity(), OnItemListener {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
+        changeUnit()
         clearBackStack()
         getCurrentData()
+    }
+
+    private fun changeUnit() {
+        sharedViewModel.selected.observe(this, Observer {
+            weatherViewModel.spCache.unit = it
+        })
     }
 
     private fun getCurrentData() {
@@ -91,10 +100,9 @@ class MainActivity : AppCompatActivity(), OnItemListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val settingsFragment = SettingsFragment()
         if (item.itemId == R.id.settings_btn) {
             clearBackStack()
-            switchFragment(settingsFragment)
+            switchFragment(SettingsFragment.newInstance(weatherViewModel.location))
         }
         return super.onOptionsItemSelected(item)
     }

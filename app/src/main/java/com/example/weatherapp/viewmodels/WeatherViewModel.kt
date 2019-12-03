@@ -19,7 +19,7 @@ class WeatherViewModel(
 ) : ViewModel() {
     var forecastList: MutableLiveData<List<WeatherResponse>> = MutableLiveData()
     var currentWeatherForecast: MutableLiveData<CurrentWeatherResponse> = MutableLiveData()
-    private val spCache by lazy { SPCache(context) }
+    val spCache by lazy { SPCache(context) }
     var location = spCache.unit
 
     init {
