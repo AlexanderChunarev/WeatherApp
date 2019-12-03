@@ -1,38 +1,45 @@
 package com.example.weatherapp
 
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.thirdhomework.listener.OnItemListener
 import com.example.weatherapp.fragments.InfoFragment
 import com.example.weatherapp.fragments.ListFragment
+import com.example.weatherapp.fragments.SettingsFragment
 import com.example.weatherapp.fragments.adapters.DataAdapter
 import com.example.weatherapp.responses.Response
 import com.example.weatherapp.responses.WeatherResponse
 import com.example.weatherapp.viewmodels.ViewModelFactory
 import com.example.weatherapp.viewmodels.WeatherViewModel
+import kotlinx.android.synthetic.main.fragment_settings.*
 
 class MainActivity : AppCompatActivity(), OnItemListener {
     private val adapter by lazy { DataAdapter(this) }
     private val listFragment by lazy { ListFragment() }
-    private var responseInfo: Response? = null
+    private val weatherViewModel by lazy {
+        ViewModelProviders.of(this, ViewModelFactory(this, this))
+            .get(WeatherViewModel::class.java)
+    }
+    private var response: Response? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(findViewById(R.id.toolbar))
+
         clearBackStack()
         getCurrentData()
     }
 
     private fun getCurrentData() {
-        val weatherViewModel =
-            ViewModelProviders.of(this, ViewModelFactory(this, this))
-                .get(WeatherViewModel::class.java)
-
         weatherViewModel.apply {
             currentWeatherForecast.observe(this@MainActivity, Observer { weather ->
                 adapter.addItem(weather)
@@ -54,7 +61,7 @@ class MainActivity : AppCompatActivity(), OnItemListener {
             .commit()
     }
 
-    private fun switchFragment(response: Response) {
+    private fun switchFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(
                 android.R.anim.slide_in_left,
@@ -62,21 +69,14 @@ class MainActivity : AppCompatActivity(), OnItemListener {
                 0,
                 android.R.anim.slide_out_right
             )
-            .replace(R.id.fragment_container, InfoFragment.newInstance(response as WeatherResponse))
+            .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
     }
 
     override fun onClickItem(position: Int) {
-        responseInfo = adapter.getWeatherList()[position]
-        switchFragment(responseInfo!!)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (responseInfo != null) {
-            outState.putSerializable(RESPONSE_KEY, responseInfo)
-        }
+        response = adapter.getWeatherList()[position]
+        switchFragment(InfoFragment.newInstance(response as WeatherResponse))
     }
 
     private fun clearBackStack() {
@@ -85,7 +85,17 @@ class MainActivity : AppCompatActivity(), OnItemListener {
         }
     }
 
-    companion object {
-        const val RESPONSE_KEY = "response_key"
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val settingsFragment = SettingsFragment()
+        if (item.itemId == R.id.settings_btn) {
+            clearBackStack()
+            switchFragment(settingsFragment)
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

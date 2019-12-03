@@ -14,4 +14,7 @@
     <string name="_63">63%</string>
     <string name="pressure">Pressure</string>
     <string name="_1022_41">1022.41</string>
+    <string name="settings">Settings</string>
+    <string name="metric">Metric</string>
+    <string name="imperial">Imperial</string>
 </resources>
