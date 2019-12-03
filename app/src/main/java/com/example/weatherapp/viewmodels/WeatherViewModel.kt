@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.example.weatherapp.Cache.SPCache
+import com.example.weatherapp.cache.SPCache
 import com.example.weatherapp.reposetories.WeatherWorker
 import com.example.weatherapp.responses.CurrentWeatherResponse
 import com.example.weatherapp.responses.WeatherResponse

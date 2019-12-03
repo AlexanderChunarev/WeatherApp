@@ -1,4 +1,4 @@
-package com.example.weatherapp.Cache
+package com.example.weatherapp.cache
 
 import android.content.Context
 import android.content.SharedPreferences
