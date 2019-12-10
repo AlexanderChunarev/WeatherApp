@@ -3,7 +3,6 @@ package com.example.weatherapp
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -19,6 +18,7 @@ import com.example.weatherapp.responses.WeatherResponse
 import com.example.weatherapp.viewmodels.SharedViewModel
 import com.example.weatherapp.viewmodels.ViewModelFactory
 import com.example.weatherapp.viewmodels.WeatherViewModel
+import kotlinx.android.synthetic.main.fragment_list.*
 
 class MainActivity : AppCompatActivity(), OnItemListener {
     private val adapter by lazy { DataAdapter(this) }
@@ -36,16 +36,21 @@ class MainActivity : AppCompatActivity(), OnItemListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
-
-        changeUnit()
         clearBackStack()
         getCurrentData()
     }
 
     private fun changeUnit() {
         sharedViewModel.selected.observe(this, Observer {
+            adapter.clear()
             weatherViewModel.spCache.unit = it
+            weatherViewModel.loadWeatherData()
         })
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        changeUnit()
     }
 
     private fun getCurrentData() {
@@ -57,16 +62,16 @@ class MainActivity : AppCompatActivity(), OnItemListener {
                 weather.forEach {
                     adapter.addItem(it)
                 }
-                initRecyclerView()
             })
         }
+        initRecyclerView()
     }
 
     private fun initRecyclerView() {
         listFragment.newAdapter = adapter
         supportFragmentManager
             .beginTransaction()
-            .add(R.id.fragment_container, listFragment)
+            .replace(R.id.fragment_container, listFragment)
             .commit()
     }
 
@@ -102,7 +107,7 @@ class MainActivity : AppCompatActivity(), OnItemListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.settings_btn) {
             clearBackStack()
-            switchFragment(SettingsFragment.newInstance(weatherViewModel.location))
+            switchFragment(SettingsFragment.newInstance(weatherViewModel.spCache.unit))
         }
         return super.onOptionsItemSelected(item)
     }

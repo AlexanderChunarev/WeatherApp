@@ -22,6 +22,12 @@ class DataAdapter(private val onItemListener: OnItemListener) : Adapter<Recycler
         notifyItemInserted(weatherList.size)
     }
 
+    fun clear() {
+        val size = weatherList.size
+        weatherList.clear()
+        notifyItemRangeRemoved(0, size)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         var viewHolder: RecyclerView.ViewHolder? = null
         when (viewType) {
