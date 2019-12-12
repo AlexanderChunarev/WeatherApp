@@ -156,7 +156,6 @@ class WeatherViewModel(
         }
         forecastList.value = list
         cursor.close()
-        dbHelper.close()
     }
 
     companion object {
