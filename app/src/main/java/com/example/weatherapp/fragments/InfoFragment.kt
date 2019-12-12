@@ -20,8 +20,8 @@ class InfoFragment : Fragment() {
         if (arguments != null) {
             rootView.apply {
                 val weatherResponse = arguments!!.getSerializable(RESPONSE_KEY) as WeatherResponse
-                humidity_value_text.text = weatherResponse.main.humidity
-                pressure_value_text.text = weatherResponse.main.pressure
+                humidity_value_text.text = weatherResponse.main.humidity.toString()
+                pressure_value_text.text = weatherResponse.main.pressure.toString()
             }
         }
         return rootView
