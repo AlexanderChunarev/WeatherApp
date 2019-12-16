@@ -5,6 +5,6 @@
     <color name="colorAccent">#D81B60</color>
     <color name="textColor">#FFFFFF</color>
     <color name="date_color">#7FBDFF</color>
-    <color name="gradient_start">#014E8D</color>
-    <color name="gradient_end">#00B69B</color>
+    <color name="gradient_start">#5E05E0</color>
+    <color name="gradient_end">#05D6D0</color>
 </resources>
