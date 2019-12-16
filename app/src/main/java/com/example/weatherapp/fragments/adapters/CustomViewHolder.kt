@@ -64,6 +64,5 @@ class CurrentWeatherViewHolder(view: View) : ViewHolder(view) {
 }
 
 private fun Float.format(): String {
-    return this.roundToInt().toString() + "°C"
-
+    return this.roundToInt().toString() + "°"
 }

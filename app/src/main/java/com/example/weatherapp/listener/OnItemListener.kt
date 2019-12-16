@@ -1,5 +1,7 @@
 package com.example.thirdhomework.listener
 
-interface OnItemListener {
+import java.io.Serializable
+
+interface OnItemListener : Serializable {
     fun onClickItem(position: Int)
 }

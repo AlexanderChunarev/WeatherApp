@@ -3,6 +3,7 @@ package com.example.weatherapp
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -18,11 +19,10 @@ import com.example.weatherapp.responses.WeatherResponse
 import com.example.weatherapp.viewmodels.SharedViewModel
 import com.example.weatherapp.viewmodels.ViewModelFactory
 import com.example.weatherapp.viewmodels.WeatherViewModel
-import kotlinx.android.synthetic.main.fragment_list.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), OnItemListener {
     private val adapter by lazy { DataAdapter(this) }
-    private val listFragment by lazy { ListFragment() }
     private val weatherViewModel by lazy {
         ViewModelProviders.of(this, ViewModelFactory(this, this))
             .get(WeatherViewModel::class.java)
@@ -37,7 +37,11 @@ class MainActivity : AppCompatActivity(), OnItemListener {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         clearBackStack()
-        getCurrentData()
+        swipe_refresh_layout.setOnRefreshListener {
+            adapter.clear()
+            weatherViewModel.loadWeatherData()
+        }
+        observeData()
     }
 
     private fun changeUnit() {
@@ -53,7 +57,7 @@ class MainActivity : AppCompatActivity(), OnItemListener {
         changeUnit()
     }
 
-    private fun getCurrentData() {
+    private fun observeData() {
         weatherViewModel.apply {
             currentWeatherForecast.observe(this@MainActivity, Observer { weather ->
                 adapter.addItem(weather)
@@ -62,12 +66,14 @@ class MainActivity : AppCompatActivity(), OnItemListener {
                 weather.forEach {
                     adapter.addItem(it)
                 }
+                swipe_refresh_layout.isRefreshing = false
             })
         }
         initRecyclerView()
     }
 
     private fun initRecyclerView() {
+        val listFragment = ListFragment.newInstance()
         listFragment.newAdapter = adapter
         supportFragmentManager
             .beginTransaction()

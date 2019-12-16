@@ -32,4 +32,8 @@ class ListFragment : Fragment() {
         }
         return rootView
     }
+
+    companion object {
+        fun newInstance() = ListFragment()
+    }
 }

@@ -2,15 +2,15 @@ package com.example.weatherapp.fragments
 
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-
 import com.example.weatherapp.R
 import com.example.weatherapp.viewmodels.SharedViewModel
 import kotlinx.android.synthetic.main.fragment_settings.*
+
 
 class SettingsFragment : Fragment() {
     private lateinit var model: SharedViewModel
@@ -24,6 +24,7 @@ class SettingsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         model = activity?.run {
             ViewModelProviders.of(this).get(SharedViewModel::class.java)
         }!!
@@ -37,7 +38,7 @@ class SettingsFragment : Fragment() {
                 "imperial" -> imperial_radioButton.isChecked = true
             }
         }
-        radioGroup.setOnCheckedChangeListener { group, checkedId ->
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.metric_radioButton -> model.selectedUnit("metric")
                 R.id.imperial_radioButton -> model.selectedUnit("imperial")
@@ -52,7 +53,6 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        const val UNIT_KEY = "selected_unit"
         private const val RESPONSE_KEY = "response_key"
     }
 }

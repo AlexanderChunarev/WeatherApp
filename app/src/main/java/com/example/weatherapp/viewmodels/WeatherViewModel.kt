@@ -8,8 +8,10 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.example.weatherapp.cache.SPCache
+import com.example.weatherapp.data.CLEAR_TABLE
 import com.example.weatherapp.data.DBContract
 import com.example.weatherapp.data.DBHelper
+import com.example.weatherapp.data.SELECT_ALL_FROM_WEATHER_TABLE
 import com.example.weatherapp.entities.Main
 import com.example.weatherapp.entities.Weather
 import com.example.weatherapp.entities.Wind
@@ -25,9 +27,9 @@ class WeatherViewModel(
     var forecastList: MutableLiveData<List<WeatherResponse>> = MutableLiveData()
     var currentWeatherForecast: MutableLiveData<CurrentWeatherResponse> = MutableLiveData()
     val spCache by lazy { SPCache(context) }
-    private val dbHelper =DBHelper(context)
+    private val dbHelper by lazy { DBHelper(context) }
     private val db by lazy { dbHelper.writableDatabase }
-    private val cv = ContentValues()
+    private val cv by lazy { ContentValues() }
 
     init {
         loadWeatherData()
@@ -50,10 +52,12 @@ class WeatherViewModel(
         }
     }
 
-    private fun loadDataFromWeb() {
-        val request = OneTimeWorkRequest.Builder(WeatherWorker::class.java)
-            .setInputData(createInputData())
-            .build()
+    fun loadDataFromWeb() {
+        val request by lazy {
+            OneTimeWorkRequest.Builder(WeatherWorker::class.java)
+                .setInputData(createInputData())
+                .build()
+        }
         WorkManager.getInstance(context).enqueue(request)
         WorkManager.getInstance(context).getWorkInfoByIdLiveData(request.id)
             .observe(lifecycleOwner, Observer {
@@ -61,12 +65,12 @@ class WeatherViewModel(
                     WeatherWorker.apply {
                         currentWeatherForecast.value = fetchCurrentForecast()
                         forecastList.value = fetchForecast()
-                        deleteDB()
-                        this.fetchForecast()?.let { it1 -> writeToDB(it1) }
-                        loadDataFromDB()
+
+                        writeToDB(forecastList.value!!)
                     }
                 }
             })
+
     }
 
     private fun checkConnection(): Boolean {
@@ -75,16 +79,13 @@ class WeatherViewModel(
         return connectivityManager.activeNetwork != null
     }
 
-
-    private fun deleteDB() {
-        context.apply {
-            deleteDatabase(DBHelper.DATABASE_NAME)
-        }
+    private fun clearTable() {
+        db.execSQL(CLEAR_TABLE)
     }
 
     private fun writeToDB(list: List<WeatherResponse>) {
+        clearTable()
         list.forEach {
-            println(true)
             cv.apply {
                 clear()
                 put(DBContract.WeatherEntry.TIME, it.dt)
@@ -105,33 +106,33 @@ class WeatherViewModel(
 
     private fun loadDataFromDB() {
         val list = mutableListOf<WeatherResponse>()
-        val sqlQuery = "select * from ${DBContract.WeatherEntry.WEATHER_TABLE}"
+        val sqlQuery = SELECT_ALL_FROM_WEATHER_TABLE
         val cursor = db.rawQuery(sqlQuery, null)
 
         with(cursor) {
             while (moveToNext()) {
                 val time =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.TIME)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.TIME)
                 val description =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.DESCRIPTION)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.DESCRIPTION)
                 val main =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.WEATHER_MAIN_CONDITION)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.WEATHER_MAIN_CONDITION)
                 val icon =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.ICON)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.ICON)
                 val temp =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.TEMPERATURE)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.TEMPERATURE)
                 val tempMin =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.TEMPERATURE_MIN)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.TEMPERATURE_MIN)
                 val tempMax =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.TEMPERATURE_MAX)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.TEMPERATURE_MAX)
                 val pressure =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.PRESSURE)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.PRESSURE)
                 val humidity =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.HUMIDITY)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.HUMIDITY)
                 val windSpeed =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.WIND_SPEED)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.WIND_SPEED)
                 val windDegree =
-                    cursor.getColumnIndexOrThrow(DBContract.WeatherEntry.WIND_DEGREE)
+                    getColumnIndexOrThrow(DBContract.WeatherEntry.WIND_DEGREE)
                 list.add(
                     WeatherResponse(
                         getLong(time),

@@ -13,7 +13,7 @@ import com.example.weatherapp.responses.Response
 import com.example.weatherapp.responses.WeatherResponse
 
 class DataAdapter(private val onItemListener: OnItemListener) : Adapter<RecyclerView.ViewHolder>() {
-    private val weatherList = mutableListOf<Response>()
+    private var weatherList = mutableListOf<Response>()
 
     fun getWeatherList() = weatherList
 
@@ -23,9 +23,8 @@ class DataAdapter(private val onItemListener: OnItemListener) : Adapter<Recycler
     }
 
     fun clear() {
-        val size = weatherList.size
         weatherList.clear()
-        notifyItemRangeRemoved(0, size)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

@@ -35,3 +35,5 @@ const val CREATE_WEATHER_TABLE =
             "${DBContract.WeatherEntry.HUMIDITY} real," +
             "${DBContract.WeatherEntry.WIND_SPEED} real," +
             "${DBContract.WeatherEntry.WIND_DEGREE} real)"
+const val CLEAR_TABLE = "delete from " + DBContract.WeatherEntry.WEATHER_TABLE
+const val SELECT_ALL_FROM_WEATHER_TABLE = "select * from ${DBContract.WeatherEntry.WEATHER_TABLE}"

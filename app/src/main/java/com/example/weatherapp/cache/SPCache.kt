@@ -19,7 +19,7 @@ class SPCache(context: Context) {
     companion object {
         const val MODE = 0
         const val SHARED_FILE = "settings_data"
-        const val COUNTRY_NAME = "Cherkasy"
+        const val COUNTRY_NAME = "Cherkasy, ua"
         const val SELECTED_SYSTEM = "metric_or_imperial"
         const val DEFAULT_METRIC = "metric"
     }
