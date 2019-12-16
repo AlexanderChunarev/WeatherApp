@@ -52,7 +52,7 @@ class WeatherViewModel(
         }
     }
 
-    fun loadDataFromWeb() {
+    private fun loadDataFromWeb() {
         val request by lazy {
             OneTimeWorkRequest.Builder(WeatherWorker::class.java)
                 .setInputData(createInputData())

@@ -17,21 +17,18 @@ import com.example.weatherapp.fragments.SettingsFragment
 import com.example.weatherapp.fragments.adapters.DataAdapter
 import com.example.weatherapp.responses.Response
 import com.example.weatherapp.responses.WeatherResponse
-import com.example.weatherapp.viewmodels.SharedViewModel
 import com.example.weatherapp.viewmodels.ViewModelFactory
 import com.example.weatherapp.viewmodels.WeatherViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), OnItemListener {
+class MainActivity : AppCompatActivity(), OnItemListener, SettingsFragment.UnitCallBack {
     private val adapter by lazy { DataAdapter(this) }
     private val weatherViewModel by lazy {
         ViewModelProviders.of(this, ViewModelFactory(this, this))
             .get(WeatherViewModel::class.java)
     }
-    private val sharedViewModel by lazy {
-        ViewModelProviders.of(this).get(SharedViewModel::class.java)
-    }
     private var response: Response? = null
+    private var currentUnit: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,19 +46,6 @@ class MainActivity : AppCompatActivity(), OnItemListener {
         observeData()
     }
 
-    private fun changeUnit() {
-        sharedViewModel.selected.observe(this, Observer {
-            adapter.clear()
-            weatherViewModel.spCache.unit = it
-            weatherViewModel.loadWeatherData()
-        })
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        changeUnit()
-    }
-
     private fun observeData() {
         weatherViewModel.apply {
             currentWeatherForecast.observe(this@MainActivity, Observer { weather ->
@@ -73,6 +57,7 @@ class MainActivity : AppCompatActivity(), OnItemListener {
                 }
                 swipe_refresh_layout.isRefreshing = false
             })
+            currentUnit = spCache.unit
         }
         initRecyclerView()
     }
@@ -121,5 +106,13 @@ class MainActivity : AppCompatActivity(), OnItemListener {
             switchFragment(SettingsFragment.newInstance(weatherViewModel.spCache.unit))
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun setUnit(s: String?) {
+        adapter.clear()
+        weatherViewModel.apply {
+            spCache.unit = s!!
+            loadWeatherData()
+        }
     }
 }

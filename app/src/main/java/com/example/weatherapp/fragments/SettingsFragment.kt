@@ -1,6 +1,7 @@
 package com.example.weatherapp.fragments
 
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,13 @@ import kotlinx.android.synthetic.main.fragment_settings.*
 
 class SettingsFragment : Fragment() {
     private lateinit var model: SharedViewModel
+    private var unit = ""
+
+    interface UnitCallBack {
+        fun setUnit(s: String?)
+    }
+
+    var someEventListener: UnitCallBack? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,7 +32,6 @@ class SettingsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         model = activity?.run {
             ViewModelProviders.of(this).get(SharedViewModel::class.java)
         }!!
@@ -34,16 +41,30 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         if (arguments != null) {
             when (arguments!!.getString(RESPONSE_KEY)) {
-                "metric" -> metric_radioButton.isChecked = true
-                "imperial" -> imperial_radioButton.isChecked = true
+                METRIC -> metric_radioButton.isChecked = true
+                IMPERIAL -> imperial_radioButton.isChecked = true
+            }
+            radioGroup.setOnCheckedChangeListener { _, checkedId ->
+                when (checkedId) {
+                    R.id.metric_radioButton -> unit = METRIC
+                    R.id.imperial_radioButton -> unit = IMPERIAL
+                }
             }
         }
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.metric_radioButton -> model.selectedUnit("metric")
-                R.id.imperial_radioButton -> model.selectedUnit("imperial")
-            }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        someEventListener = try {
+            activity as UnitCallBack
+        } catch (e: ClassCastException) {
+            throw ClassCastException(e.message)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        someEventListener?.setUnit(unit)
     }
 
     companion object {
@@ -54,5 +75,7 @@ class SettingsFragment : Fragment() {
         }
 
         private const val RESPONSE_KEY = "response_key"
+        internal const val METRIC = "metric"
+        internal const val IMPERIAL = "imperial"
     }
 }
